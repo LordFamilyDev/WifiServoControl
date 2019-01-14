@@ -60,6 +60,30 @@ UDP Server Ack Port: 5515
 
 
 -------------------------------------------------------------
+Local UDP Server Operation:
+-------------------------------------------------------------
+- Listen for broadcasts on broadcast port
+    On Client ident, acknowledge client add client to client list
+
+- Listen for UDP on localhost command port
+    On commands, if client in list, add command to client's queue
+    Intended to receive commands from Spikemark UDP messenger onlocal host:
+            https://creativeconners.com/products/software/
+
+- Continuously pings clients at 10 sec rate to verify status
+    If Client lost > 30sec alert operator & log
+
+- Send commands to client from client queue
+    Retry every second until ACK
+
+- Host HTTP server on localhost
+    - Lists attached clients
+    - Allows changing config options
+    - Allows sending commands to clients
+
+- Configurable via Http, settigns stored in local config file
+
+-------------------------------------------------------------
 Remote Operation:
 -------------------------------------------------------------
 
@@ -78,21 +102,3 @@ Interfaces:
     UDP client
     Http Server
 
--------------------------------------------------------------
-Local UDP Server Operation:
--------------------------------------------------------------
-- Listen for broadcasts on broadcast port
-    On Client ident, acknowledge client add client to clinet list
-
-- Listen for UDP on localhost, command port
-    On commands, if client in list, add command to client's queue
-
-- Send commands to client from client queue
-    Retry every second until ACK
-    Ping client every 10sec and get update
-    If Client lost > 30sec  fire alert.
-
-- Host HTTP server on localhost
-    - Lists attached clients
-    - allows remapping of client names and commands, stored in local ini file
-    - running log of commands sentacked
