@@ -1,3 +1,73 @@
+-------------------------------------------------------------
+Local UDP Server Operation:
+-------------------------------------------------------------
+- Listen for broadcasts on broadcast port
+    On Client ident, acknowledge client add client to client list
+
+- Listen for UDP on localhost command port
+    On commands, if client in list, add command to client's queue
+    Intended to receive commands from Spikemark UDP messenger onlocal host:
+            https://creativeconners.com/products/software/
+
+- Continuously pings clients at 10 sec rate to verify status
+    If Client lost > 30sec alert operator & log
+
+- Send commands to client from client queue
+    Retry every second until ACK
+
+- Host HTTP server on localhost
+    - Lists attached clients
+    - Allows changing config options
+    - Allows sending commands to clients
+
+- Configurable via Http, settigns stored in local config file
+
+-------------------------------------------------------------
+ServoClient Operation:
+-------------------------------------------------------------
+
+On Boot:
+- Init Servo's to 90°
+- Look for SSID in EEprom for 30sec
+- If SSID doesn't exist
+    Start WIFI in access point mode
+- If SSID exists
+    Bradcast message every 10 seconds until server is found
+- On Server response store server ip and go into listen mode (Stop broadcasting unless server is lost for > 1 minute)
+
+
+Interfaces:
+    Serial Link
+    UDP client
+    Http Server
+
+-------------------------------------------------------------
+Command List:
+-------------------------------------------------------------
+Command format:
+    #[Devicename].[Command]:<arg1>,<arg2>,<...>
+
+
+Available cammands listed by typing 
+    #help
+
+-------------------------------------------------------------
+Ports:
+-------------------------------------------------------------
+Client:
+HTTP Port:8010
+UDP Listen Port: 5513
+
+Server:
+HTTP Port:8010
+UDP Broadcast Listen Port:5512
+UDP Server Local cmd Listen Port: 5514
+UDP Server Ack Port: 5515
+
+
+-------------------------------------------------------------
+WifiSevoController Hardware
+-------------------------------------------------------------
 
 Dev Board:
 https://www.amazon.com/gp/product/B010N1SPRK
@@ -33,72 +103,3 @@ https://gist.githubusercontent.com/edgar-bonet/607b387260388be77e96/raw/de29a542
 
 
 https://arduino-esp8266.readthedocs.io/en/latest/index.html
-
-
--------------------------------------------------------------
-Command List:
--------------------------------------------------------------
-Command format:
-    #[Devicename].[Command]:<arg1>,<arg2>,<...>
-
-
-Available cammands listed by typing 
-    #help
-
--------------------------------------------------------------
-Ports:
--------------------------------------------------------------
-Client:
-HTTP Port:8010
-UDP Listen Port: 5513
-
-Server:
-HTTP Port:8010
-UDP Broadcast Listen Port:5512
-UDP Server Local cmd Listen Port: 5514
-UDP Server Ack Port: 5515
-
-
--------------------------------------------------------------
-Local UDP Server Operation:
--------------------------------------------------------------
-- Listen for broadcasts on broadcast port
-    On Client ident, acknowledge client add client to client list
-
-- Listen for UDP on localhost command port
-    On commands, if client in list, add command to client's queue
-    Intended to receive commands from Spikemark UDP messenger onlocal host:
-            https://creativeconners.com/products/software/
-
-- Continuously pings clients at 10 sec rate to verify status
-    If Client lost > 30sec alert operator & log
-
-- Send commands to client from client queue
-    Retry every second until ACK
-
-- Host HTTP server on localhost
-    - Lists attached clients
-    - Allows changing config options
-    - Allows sending commands to clients
-
-- Configurable via Http, settigns stored in local config file
-
--------------------------------------------------------------
-Remote Operation:
--------------------------------------------------------------
-
-On Boot:
-- Init Servo's to 90°
-- Look for SSID in EEprom for 30sec
-- If SSID doesn't exist
-    Start WIFI in access point mode
-- If SSID exists
-    Bradcast message every 10 seconds until server is found
-- On Server response store server ip and go into listen mode (Stop broadcasting unless server is lost for > 1 minute)
-
-
-Interfaces:
-    Serial Link
-    UDP client
-    Http Server
-
