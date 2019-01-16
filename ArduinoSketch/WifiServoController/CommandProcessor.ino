@@ -1,45 +1,74 @@
-void processCommand(char * cmdBuffer)
-{
-    if(strsep(&cmdBuffer,"#") == NULL)
-    {
-        Serial.print(F("Error: Unknown command: "));
-        Serial.println(cmdBuffer);
-        return;
-    }
-    char * command = strsep(&cmdBuffer,":");
-    if(command == NULL)
-    {
-      Serial.print(F("Error: Unknown command: "));
-      Serial.println(cmdBuffer);
-      Serial.print(F("Type #help for a list of cammands"));
-      return;
-    }
-    char * reply = &ReplyBuffer[0];
+#define MAX_ARGS 4
 
-    if (strcmp_P(command, PSTR("help")) == 0) {
-        Serial.println(F(
+void printCommandList()
+{
+  Serial.println(F(
             "#help --  This menu\r\n"
             "#SetSSID:<SSID>\r\n"
             "#SetPass:<WifiPassword>\r\n"
             "#SetName:<DeviceName>\r\n"
             "#SetServo:<Servo>,<Position>,<step size>,<stepdly(ms)>\r\n"
-            "#SetOutput:<Output>,<1(on)||0(off)>\r\n"
             //"#SetServer:<ServerIP>,<ServerPort>\r\n"
             ));
-    } else if (strcmp_P(command, PSTR("SetSSID")) == 0) {
-    } else if (strcmp_P(command, PSTR("SetPass")) == 0) {
-    } else if (strcmp_P(command, PSTR("SetName")) == 0) {
-    } else if (strcmp_P(command, PSTR("SetServo")) == 0) {
-            int sPin = atoi(strsep(&cmdBuffer, ","));
-            int Position = atoi(strsep(&cmdBuffer, ","));
-            servoArray[sPin].write(Position);
-    } else if (strcmp_P(command, PSTR("SetOutput")) == 0) {
-    } else if (strcmp_P(command, PSTR("SetServer")) == 0) {
-    } else {
-        Serial.print(F("Error: Unknown command: "));
-        Serial.println(command);
+}
+
+
+
+void processCommand(char * cmdBuffer)
+{
+    char * cmd, arglist;
+    char * args[MAX_ARGS];
+    char * reply = &ReplyBuffer[0];
+    strcpy(reply, PSTR("CMDFAIL"));
+    
+    if( *cmdBuffer == '#') 
+    {
+      strsep(&cmdBuffer,"#");
+    }
+    else
+    {
+      return;
+    }
+    cmd = strsep(&cmdBuffer,":");
+    if(cmd == NULL)
+    {
+      return;
     }
 
-//        
-//        analogWrite(pin, value);
+    //If argument is a string
+    if (strcmp_P(cmd, PSTR("SetSSID")) == 0) {
+      strcpy(reply, PSTR("OK:SSID:"));
+      strcpy(&reply[8],cmdBuffer);
+    } else if (strcmp_P(cmd, PSTR("SetPass")) == 0) {
+      strcpy(reply, PSTR("OK:Pass:"));
+      strcpy(&reply[8],cmdBuffer);
+    } else if (strcmp_P(cmd, PSTR("SetName")) == 0) {
+      strcpy(reply, PSTR("OK:Name:"));
+      strcpy(&reply[8],cmdBuffer);
+    } else
+    // If argument is a list of arguments
+    {
+      for(int i = 0; i < MAX_ARGS ; i ++)
+      {
+        args[i] = strsep(&cmdBuffer,":, ;");   
+      }
+      if (strcmp_P(cmd, PSTR("help")) == 0) {
+        printCommandList();
+      } else if (strcmp_P(cmd, PSTR("SetServo")) == 0) {
+        if(args[3] != NULL)
+        {
+          int sPin = atoi(args[0]);
+          int Position = atoi(args[1]);
+          int Step = atoi(args[2]);
+          int Delay = atoi(args[3]);
+          servoArray[sPin].write(Position);
+        }
+      } else if (strcmp_P(cmd, PSTR("SetServer")) == 0) {
+      } else {
+        Serial.print(F("Error: Unknown command: "));
+        Serial.println(cmd);
+      }
+    }
+
+    Serial.println(reply);
 }
