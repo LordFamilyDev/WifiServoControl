@@ -19,7 +19,7 @@ void processCommand(char * cmdBuffer)
     char * cmd, arglist;
     char * args[MAX_ARGS];
     char * reply = &ReplyBuffer[0];
-    strcpy(reply, PSTR("CMDFAIL"));
+    strcpy(reply, PSTR("Error:"));
     
     if( *cmdBuffer == '#') 
     {
