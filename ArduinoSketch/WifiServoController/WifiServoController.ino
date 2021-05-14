@@ -4,9 +4,9 @@
 #include <Servo.h>
 
 #ifndef STASSID
-#define STASSID "Lordy"
-#define STAPSK  "benjaminchristopherlord"
-#define DEVID   "WifiServoA"
+#define STASSID ""
+#define STAPSK  ""
+#define DEVID   ""
 #endif
 
 #define SERIAL_BUF_LENGTH 128
